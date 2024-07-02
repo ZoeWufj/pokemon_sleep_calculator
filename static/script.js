@@ -38,7 +38,7 @@ function calculate() {
         for (let [ingredient, amount] of Object.entries(data)) {
             let li = document.createElement('li');
             let encodedIngredient = encodeURIComponent(ingredient); // 對 ingredient 做編碼
-            li.innerHTML = `<img src="/static/images/${encodedIngredient}.png" alt="${ingredient}" style="width: 50px;"> ${ingredient}: ${amount}`;
+            li.innerHTML = `${ingredient}: ${amount}`;
             ul.appendChild(li);
             totalIngredientsCount += amount;
         }
