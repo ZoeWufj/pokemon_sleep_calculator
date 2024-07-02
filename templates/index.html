@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>選擇食譜</title>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            body {
+                background-color: #f0f8ff;
+            }
+            .container-custom {
+                background-color: rgba(255, 255, 255, 0.8); 
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .navbar-custom {
+                background-color: #87cefa;
+                color: #fff;
+            }
+            .navbar-custom .navbar-brand {
+                color: #fff;
+            }
+            .navbar-custom .navbar-brand:hover {
+                color: #00bfff;
+            }
+            .recipe-item {
+                cursor: move;
+                border: 1px solid #ddd;
+                background-color: #fff;
+                margin-bottom: 10px;
+                padding: 10px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+            }
+            .recipe-item img {
+                max-width: 80px;
+                margin-right: 10px;
+                border-radius: 8px;
+            }
+            .meal-box {
+                border: 1px solid #ddd;
+                background-color: #fff;
+                padding: 10px;
+                border-radius: 8px;
+                min-height: 28%;
+                min-width: 80%;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+            .meal-box img {
+                max-width: 50px;
+                margin: 5px;
+                border-radius: 8px;
+            }
+            .meal-box h2 {
+                font-size: 1.25rem;
+                margin-bottom: 10px;
+            }
+            .btn-calculate {
+                background-color: #87cefa;
+                color: #fff;
+                border-radius: 20px;
+            }
+            .btn-calculate:hover {
+                background-color: #00bfff;
+            }
+            .btn-reset {
+                background-color: #ff7f7f;
+                color: #fff;
+                border-radius: 20px;
+            }
+            .btn-reset:hover {
+                background-color: #ff4f4f;
+            }
+            .result-box {
+                font-size: 1.25rem;
+                border: 1px solid #ddd;
+                background-color: #fff;
+                padding: 10px;
+                border-radius: 8px;
+                min-height: 100%;
+                min-width: 60%;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+            ul {
+                list-style-type: none; 
+                text-align: left;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-custom">
+            <div class="container">
+                <a class="navbar-brand" href="#">食譜計算器</a>
+            </div>
+        </nav>
+        <div class="container-custom container ">
+            <div class="row">
+                <div class="col-md-3">
+                    <ul class="nav nav-tabs" id="recipeTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="curry-tab" data-toggle="tab" href="#curry" role="tab" aria-controls="curry" aria-selected="true">咖哩</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="salad-tab" data-toggle="tab" href="#salad" role="tab" aria-controls="salad" aria-selected="false">沙拉</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="dessert-tab" data-toggle="tab" href="#dessert" role="tab" aria-controls="dessert" aria-selected="false">甜點</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="recipeTabContent">
+                        <div class="tab-pane fade show active" id="curry" role="tabpanel" aria-labelledby="curry-tab">
+                            {% for recipe, ingredients in recipes.curry.items() %}
+                                <div class="recipe-item" draggable="true" ondragstart="drag(event)" id="{{ recipe }}">
+                                    <img src="{{ url_for('static', filename='images/' + recipe + '.png') }}" alt="{{ recipe }}">
+                                    <span>{{ recipe }} ({{ ingredients.values()|sum }})</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="tab-pane fade" id="salad" role="tabpanel" aria-labelledby="salad-tab">
+                            {% for recipe, ingredients in recipes.salad.items() %}
+                                <div class="recipe-item" draggable="true" ondragstart="drag(event)" id="{{ recipe }}">
+                                    <img src="{{ url_for('static', filename='images/' + recipe + '.png') }}" alt="{{ recipe }}">
+                                    <span>{{ recipe }} ({{ ingredients.values()|sum }})</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="tab-pane fade" id="dessert" role="tabpanel" aria-labelledby="dessert-tab">
+                            {% for recipe, ingredients in recipes.dessert.items() %}
+                                <div class="recipe-item" draggable="true" ondragstart="drag(event)" id="{{ recipe }}">
+                                    <img src="{{ url_for('static', filename='images/' + recipe + '.png') }}" alt="{{ recipe }}">
+                                    <span>{{ recipe }} ({{ ingredients.values()|sum }})</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 d-flex flex-column align-items-center">
+                    <div class="meal-box" ondrop="drop(event)" ondragover="allowDrop(event)" id="breakfast-box">
+                        <h2>早餐</h2>
+                    </div>
+                    <div class="meal-box" ondrop="drop(event)" ondragover="allowDrop(event)" id="lunch-box">
+                        <h2>午餐</h2>
+                    </div>
+                    <div class="meal-box" ondrop="drop(event)" ondragover="allowDrop(event)" id="dinner-box">
+                        <h2>晚餐</h2>
+                    </div>
+                    <div class="d-flex justify-content-center mt-3" style="width: 100%;">
+                        <button class="btn btn-calculate" onclick="calculate()">計算食材量</button>
+                        <button class="btn btn-reset" onclick="resetPage()">重置</button>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div id="result" class="result-box"><h5>結果</h5></div>
+                </div>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="{{ url_for('static', filename='script.js') }}"></script>
+    </body>
+</html>
